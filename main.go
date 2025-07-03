@@ -91,6 +91,10 @@ func ParseMatches(lines []string) ([]MatchResult, error) {
 		match, err := parseLine(line)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Skipping invalid line: %q (%v)\n", line, err)
+			// In a production enviroment we would log this error instead of printing to stderr
+			// but for this example we just print it
+			// In a real application, I might also depending on the use case
+			// not an error, as this can cause unexpeted league results
 			continue
 		}
 		results = append(results, match)
@@ -103,6 +107,10 @@ func FormatLeaderboard(scores map[string]int) []string {
 	for team, pts := range scores {
 		stats = append(stats, TeamStats{team, pts})
 	}
+
+	// We could preallocate the slice if you want a small performance optimization,
+	// But readability-wise, the append() version is clean and idiomatic in Go, and
+	// for small datasets (like this one), the performance impact is negligible.
 	sort.Slice(stats, func(i, j int) bool {
 		if stats[i].Points == stats[j].Points {
 			return stats[i].Name < stats[j].Name
@@ -111,13 +119,17 @@ func FormatLeaderboard(scores map[string]int) []string {
 	})
 
 	displayRank := 0
+	previousPoints := -1
 	var output []string
 	for i, stat := range stats {
-		displayRank = i + 1
+		if stat.Points != previousPoints {
+			displayRank = i + 1
+		}
 		pointLabel := "pts"
 		if stat.Points == 1 {
 			pointLabel = "pt"
 		}
+		previousPoints = stat.Points
 		output = append(output, fmt.Sprintf("%d. %s, %d %s", displayRank, stat.Name, stat.Points, pointLabel))
 	}
 	return output

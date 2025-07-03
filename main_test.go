@@ -75,14 +75,16 @@ func TestFormatLeaderboard(t *testing.T) {
 		"Lions":      5,
 		"Snakes":     1,
 		"FC Awesome": 1,
+		"Gladiators": 1,
 		"Grouches":   0,
 	}
 	expected := []string{
 		"1. Tarantulas, 6 pts",
 		"2. Lions, 5 pts",
 		"3. FC Awesome, 1 pt",
-		"4. Snakes, 1 pt",
-		"5. Grouches, 0 pts",
+		"3. Gladiators, 1 pt",
+		"3. Snakes, 1 pt",
+		"6. Grouches, 0 pts",
 	}
 
 	output := FormatLeaderboard(scores)
